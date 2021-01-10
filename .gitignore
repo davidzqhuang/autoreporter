@@ -1,5 +1,5 @@
 *.egg-info
-/build/
-/dist/
+build/
+dist/
 
-/__pycache__/
+__pycache__/
