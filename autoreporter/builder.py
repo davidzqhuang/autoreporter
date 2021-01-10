@@ -7,7 +7,7 @@ def fig2img(fig):
 
     return ImageReader(imgdata)
 
-def builder(path, ref, fig_dict):
+def builder(path, ref, fig_dict = dict(), var_dict = dict()):
     SCALE = 2
     PAD = 0.3
     from pptx import Presentation
@@ -26,9 +26,6 @@ def builder(path, ref, fig_dict):
         blank_slide_layout = out.slide_layouts[6]
         o_slide = out.slides.add_slide(blank_slide_layout)
 
-        # https://stackoverflow.com/questions/62864082/copy-slide-with-images-python-pptx/62921781#62921781
-        imgDict = {}
-
         for shape in slide.shapes:
             try:
                 if shape.text[0] == "!" and shape.text[1] == "(" and shape.text[-1] == ")":
@@ -39,17 +36,42 @@ def builder(path, ref, fig_dict):
                     fig.savefig(f.name, format='png',dpi = 300)
                     pic = o_slide.shapes.add_picture(f.name, shape.left, shape.top, width=shape.width)
                     continue
+
+                fvar = False
+                otxt = ""
+                nvar = ""
+                i = 0
+
+                while i < len(shape.text):
+                    if fvar:
+                        if shape.text[i] != "]":
+                            nvar += shape.text[i]
+                        else:
+                            otxt += var_dict[nvar]
+                            fvar = False
+                            nvar = ""
+                    elif shape.text[i] == "$" and shape.text[i+1] == "[":
+                        fvar = True
+                        nvar = ""
+                        i+=1 
+                    else:
+                        otxt += shape.text[i]
+                    i+=1
+                shape.text = otxt
+                cp = copy.deepcopy(shape.element) 
+                o_slide.shapes._spTree.insert_element_before(cp, 'p:extLst')
+                continue
             except:
                 pass
             
             try:
+                img = shape.image.blob
                 f = tempfile.NamedTemporaryFile()
-                f.write(shape.image.blob)
+                f.write(img)
                 o_slide.shapes.add_picture(f.name, shape.left, shape.top, shape.width, shape.height)
                 continue
             except:
                 pass
 
             o_slide.shapes._spTree.insert_element_before(copy.deepcopy(shape.element), 'p:extLst')
-                
     out.save(path)

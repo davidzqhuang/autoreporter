@@ -64,4 +64,4 @@ ax.pcolormesh(x, y, Z)
 
 from autoreporter import builder
 
-builder.builder("report.pptx", "test.pptx", fig_dict)
+builder.builder("report.pptx", "test.pptx", fig_dict,var_dict={"a":"123"})
