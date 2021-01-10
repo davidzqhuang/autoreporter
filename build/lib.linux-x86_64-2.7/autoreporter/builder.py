@@ -14,7 +14,7 @@ def builder(path, ref, fig_dict):
     from pptx.util import Inches
     import tempfile
     
-    prs = Presentation(ref)
+    prs = Presentation("data/test.pptx")
     out = Presentation()
     
     out.slide_width = prs.slide_width
