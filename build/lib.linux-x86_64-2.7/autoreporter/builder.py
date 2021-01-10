@@ -14,8 +14,10 @@ def builder(path, ref, fig_dict):
     from pptx.util import Inches
     import tempfile
     
-    prs = Presentation("data/test.pptx")
+    prs = Presentation(ref)
     out = Presentation()
+
+    out.slide_layouts = prs.slide_layouts
     
     out.slide_width = prs.slide_width
     out.slide_height = prs.slide_height
@@ -32,5 +34,9 @@ def builder(path, ref, fig_dict):
                 fig.set_tight_layout({"pad" : PAD})
                 fig.savefig(f.name, format='png',dpi = 300)
                 pic = o_slide.shapes.add_picture(f.name, shape.left, shape.top, width=shape.width)
+            else:
+                # o_slide.shapes.add_shape(shape.shape_type, shape.left, shape.top, shape.width, shape.height)
+                # o_slide.shapes[-1] = shape
+                o_slide.append(shape)
                 
     out.save(path)
