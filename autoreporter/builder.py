@@ -1,15 +1,19 @@
+from io import StringIO
+from PIL import Image
+
 # https://stackoverflow.com/questions/18897511/how-to-drawimage-a-matplotlib-figure-in-a-reportlab-canvas
 
 def fig2img(fig):
-    imgdata = cStringIO.StringIO()
+    imgdata = StringIO()
     fig.savefig(imgdata, format='png')
     imgdata.seek(0)  # rewind the data
 
-    return ImageReader(imgdata)
+    return Image.open(imgdata)
 
 def builder(path, ref, fig_dict = dict(), var_dict = dict()):
     SCALE = 2
     PAD = 0.3
+
     from pptx import Presentation
     from pptx.util import Inches
     import tempfile
