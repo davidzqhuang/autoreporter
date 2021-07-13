@@ -1,5 +1,7 @@
 from io import StringIO
 from PIL import Image
+import matplotlib
+import plotly
 
 # https://stackoverflow.com/questions/18897511/how-to-drawimage-a-matplotlib-figure-in-a-reportlab-canvas
 
@@ -35,11 +37,16 @@ def builder(path, ref, fig_dict = dict(), var_dict = dict()):
                 if shape.text[0] == "!" and shape.text[1] == "(" and shape.text[-1] == ")":
                     f = tempfile.NamedTemporaryFile(suffix=".png")
                     fig = fig_dict[shape.text[2:-1]]
-                    fig.set_size_inches(SCALE*shape.width/Inches(1), SCALE*shape.height/Inches(1))
-                    fig.set_tight_layout({"pad" : PAD})
-                    fig.savefig(f.name, format='png',dpi = 300)
-                    pic = o_slide.shapes.add_picture(f.name, shape.left, shape.top, width=shape.width)
-                    continue
+                    if type(fig) == matplotlib.figure.Figure:
+                        fig.set_size_inches(SCALE*shape.width/Inches(1), SCALE*shape.height/Inches(1))
+                        fig.set_tight_layout({"pad" : PAD})
+                        fig.savefig(f.name, format='png',dpi = 300)
+                        pic = o_slide.shapes.add_picture(f.name, shape.left, shape.top, width=shape.width)
+                        continue
+                    elif type(fig) == plotly.graph_objs._figure.Figure:
+                        fig.write_image(f.name)
+                        pic = o_slide.shapes.add_picture(f.name, shape.left, shape.top, width=shape.width)
+                        continue
 
                 fvar = False
                 otxt = ""

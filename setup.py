@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="autoreporter", # Replace with your own username
-    version="0.0.1",
+    version="0.0.2",
     author="David Huang",
     author_email="dhuang26@gmail.com",
     description="To easily format, design, and automatically generate reports",
